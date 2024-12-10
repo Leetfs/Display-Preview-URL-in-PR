@@ -1,4 +1,4 @@
-name: 'Display-Preview-URL-in-PR'
+name: 'Display Preview URL in PR'
 description: 'Generate and post a preview URL as a PR comment.'
 branding:
   icon: 'award'
