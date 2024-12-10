@@ -13,6 +13,11 @@ inputs:
     required: true
   GITHUB_TOKEN:
     required: true
+  REMOVE_PREFIX:
+    required: false
+  REMOVE_SUFFIX:
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -36,12 +41,12 @@ runs:
           # 处理文件路径，拼接成完整的 URL
           for file in $files; do
             if [[ $file == *.md ]]; then
-              # 去掉路径前的 "docs/" 和后缀 ".md"
-              modified_file="${file#docs/}"   # 删除路径前的 "docs/"
-              modified_file="${modified_file%.md}"  # 删除路径后面的 ".md"
+              # 去掉路径前缀和后缀
+              modified_file="${file#${{ inputs.REMOVE_PREFIX }}}"   # 删除路径前缀
+              modified_file="${modified_file%${{ inputs.REMOVE_SUFFIX }}}"  # 删除路径后缀
 
               # 拼接 URL
-              file_url="${{ inputs.previewUrl }}/${modified_file}"
+              file_url="${{ inputs.previewUrl }}${modified_file}"
               all_file_urls="${all_file_urls}\n${file_url}"
             fi
           done
