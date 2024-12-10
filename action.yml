@@ -1,7 +1,9 @@
-name: 'PR Preview URL Output'
+name: 'Display-Preview-URL-in-PR'
 description: 'Generate and post a preview URL as a PR comment.'
-Icon: bell
-Color: purple
+branding:
+  icon: 'award'
+  color: 'green'
+
 inputs:
   previewUrl:
     required: true
@@ -9,7 +11,8 @@ inputs:
     required: true
   BOT_APP_SECRET:
     required: true
-
+  GITHUB_TOKEN:
+    required: true
 runs:
   using: "composite"
   steps:
@@ -38,14 +41,15 @@ runs:
               modified_file="${modified_file%.md}"  # 删除路径后面的 ".md"
 
               # 拼接 URL
-              file_url="${{ steps.deploy.outputs.deployment-url }}/${modified_file}"
+              file_url="${{ inputs.previewUrl }}/${modified_file}"
               all_file_urls="${all_file_urls}\n${file_url}"
             fi
           done
-          echo "all_file_urls=$all_file_urls" >> $GITHUB_OUTPUT
-          echo -e "All File URLs: $all_file_urls"
+          echo "all_file_urls=${all_file_urls}" >> $GITHUB_ENV
+          echo -e "All File URLs: ${{ env.all_file_urls }}"
+      shell: bash
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
 
     # 获取预览链接并发送到 PR
     - name: 发送整体 PR review
@@ -54,9 +58,7 @@ runs:
         github-token: ${{ steps.auth.outputs.token }}
         script: |
           const prNumber = context.payload.pull_request.number;
-          const previewUrl = "${{ inputs.previewUrl }}";
-          const pageUrls = "${{ inputs.pageUrls }}";
-          const reviewBody = `🚀 预览部署完成！访问链接: ${previewUrl}\n\n✨ 本 PR 修改了以下页面: ✨${pageUrls}`;
+          const reviewBody = `🚀 预览部署完成！访问链接: ${{ inputs.previewUrl }}\n\n✨ 本 PR 修改了以下页面: ✨${{ env.all_file_urls }}`;
 
           // 获取现有 review
           const { data: reviews } = await github.rest.pulls.listReviews({
