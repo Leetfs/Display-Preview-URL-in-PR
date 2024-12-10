@@ -1,5 +1,7 @@
 name: 'PR Preview URL Output'
 description: 'Generate and post a preview URL as a PR comment.'
+Icon: bell
+Color: purple
 inputs:
   previewUrl:
     required: true
