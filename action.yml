@@ -51,7 +51,6 @@ runs:
               for suffix in "${SUFFIXES[@]}"; do
                 if [[ "$modified_file" == *"$suffix" ]]; then
                   modified_file="${modified_file%$suffix}"
-                  break
                 fi
               done
 
